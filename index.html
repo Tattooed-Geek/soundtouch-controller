@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundTouch Controller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Tokens ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.5;
+       background: var(--bg); color: var(--text); min-height: 100dvh;
+       transition: background .25s, color .25s; }
+button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+input  { font: inherit; color: inherit; }
+img    { display: block; max-width: 100%; }
+
+/* ── Dark / Light ────────────────────────────────────────────────────── */
+:root, [data-theme="dark"] {
+  --bg:           #0c0c0e;
+  --surface:      #17171a;
+  --surface-2:    #1f1f23;
+  --surface-3:    #28282d;
+  --border:       rgba(255,255,255,.07);
+  --border-strong:rgba(255,255,255,.14);
+  --text:         #f0f0f2;
+  --text-muted:   #8a8a93;
+  --text-faint:   #44444c;
+  --accent:       #00c8d8;
+  --accent-hover: #00e0f2;
+  --accent-dim:   rgba(0,200,216,.15);
+  --danger:       #f87171;
+  --success:      #4ade80;
+  --warn:         #fb923c;
+  --shadow:       0 4px 24px rgba(0,0,0,.5);
+  --radius:       12px;
+  --radius-sm:    8px;
+  --transition:   180ms cubic-bezier(.16,1,.3,1);
+}
+[data-theme="light"] {
+  --bg:           #f1f1f4;
+  --surface:      #ffffff;
+  --surface-2:    #f5f5f8;
+  --surface-3:    #eaeaee;
+  --border:       rgba(0,0,0,.08);
+  --border-strong:rgba(0,0,0,.16);
+  --text:         #18181c;
+  --text-muted:   #65656e;
+  --text-faint:   #a8a8b0;
+  --accent:       #0098a8;
+  --accent-hover: #007888;
+  --accent-dim:   rgba(0,152,168,.12);
+  --danger:       #dc2626;
+  --success:      #16a34a;
+  --warn:         #ea580c;
+  --shadow:       0 4px 24px rgba(0,0,0,.12);
+}
+
+/* ── Layout ──────────────────────────────────────────────────────────── */
+.app { display: flex; flex-direction: column; min-height: 100dvh; max-width: 640px;
+       margin: 0 auto; padding: 0 16px 32px; }
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+header { display: flex; align-items: center; gap: 12px;
+         padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.logo-svg { flex-shrink: 0; color: var(--accent); }
+.device-info { flex: 1; min-width: 0; }
+.device-name { font-size: 15px; font-weight: 600; color: var(--text);
+               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.device-sub  { font-size: 12px; color: var(--text-muted); }
+.header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.icon-btn { width: 36px; height: 36px; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; color: var(--text-muted);
+            border: 1px solid var(--border); transition: all var(--transition); }
+.icon-btn:hover { color: var(--text); background: var(--surface-3); }
+
+/* ── Status pill ─────────────────────────────────────────────────────── */
+.status-pill { display: inline-flex; align-items: center; gap: 6px;
+               padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 500; }
+.status-pill.connected    { background: rgba(74,222,128,.12); color: var(--success); }
+.status-pill.disconnected { background: rgba(248,113,113,.12); color: var(--danger); }
+.status-pill.connecting   { background: rgba(251,146,60,.12);  color: var(--warn); }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.dot.pulse { animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── Cards ───────────────────────────────────────────────────────────── */
+.card { background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 20px; margin-bottom: 12px; }
+.card-title { font-size: 11px; font-weight: 600; color: var(--text-faint);
+              letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+
+/* ── Now Playing ─────────────────────────────────────────────────────── */
+.now-playing { display: flex; gap: 16px; align-items: flex-start; }
+.art-wrap { width: 80px; height: 80px; flex-shrink: 0; border-radius: 10px;
+            overflow: hidden; background: var(--surface-3); display: flex;
+            align-items: center; justify-content: center; }
+.art-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.art-placeholder { font-size: 28px; line-height: 1; }
+.track-info { flex: 1; min-width: 0; }
+.track-station { font-size: 13px; font-weight: 600; color: var(--text);
+                 white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-title  { font-size: 12px; color: var(--text-muted); margin-top: 3px;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-artist { font-size: 12px; color: var(--text-faint); margin-top: 2px;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.play-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
+              font-size: 10px; font-weight: 600; letter-spacing: .06em;
+              text-transform: uppercase; color: var(--accent); }
+.play-badge .dot { background: var(--accent); }
+.play-badge.paused { color: var(--text-faint); }
+.play-badge.paused .dot { background: var(--text-faint); animation: none; }
+.play-badge.stopped { color: var(--text-faint); }
+.play-badge.stopped .dot { background: var(--text-faint); animation: none; }
+
+/* ── Transport ───────────────────────────────────────────────────────── */
+.transport-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.t-btn { width: 48px; height: 48px; border-radius: 50%; display: flex;
+         align-items: center; justify-content: center; border: 1px solid var(--border);
+         color: var(--text-muted); transition: all var(--transition); }
+.t-btn:hover { color: var(--text); background: var(--surface-3); border-color: var(--border-strong); }
+.t-btn:active { transform: scale(.93); }
+.t-btn.primary { width: 56px; height: 56px; background: var(--accent);
+                 border-color: transparent; color: #000; }
+.t-btn.primary:hover { background: var(--accent-hover); }
+.t-btn svg { pointer-events: none; }
+
+/* ── Sliders ─────────────────────────────────────────────────────────── */
+.slider-row { display: flex; align-items: center; gap: 12px; }
+.slider-label { font-size: 12px; color: var(--text-muted); width: 36px; }
+.slider-wrap { flex: 1; position: relative; }
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px; border-radius: 4px;
+  background: var(--surface-3); outline: none; cursor: pointer; }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--bg); cursor: pointer;
+  transition: transform var(--transition); }
+input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
+  border: 2px solid var(--bg); cursor: pointer; }
+.slider-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+              color: var(--text); width: 36px; text-align: right; }
+.mute-btn { width: 32px; height: 32px; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; color: var(--text-muted);
+            transition: all var(--transition); flex-shrink: 0; }
+.mute-btn:hover { color: var(--text); background: var(--surface-3); }
+.mute-btn.muted { color: var(--danger); }
+
+/* ── Sources ─────────────────────────────────────────────────────────── */
+.sources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 8px; }
+.source-btn { padding: 10px 8px; border-radius: var(--radius-sm);
+              border: 1px solid var(--border); background: var(--surface-2);
+              color: var(--text-muted); font-size: 12px; font-weight: 500;
+              display: flex; flex-direction: column; align-items: center; gap: 6px;
+              transition: all var(--transition); }
+.source-btn:hover { border-color: var(--border-strong); color: var(--text); background: var(--surface-3); }
+.source-btn:active { transform: scale(.96); }
+.source-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.source-btn svg { opacity: .7; }
+.source-btn.active svg { opacity: 1; }
+
+/* ── Presets ─────────────────────────────────────────────────────────── */
+.section-head { display: flex; align-items: center; justify-content: space-between;
+                margin-bottom: 14px; }
+.section-head h3 { font-size: 11px; font-weight: 600; color: var(--text-faint);
+                   letter-spacing: .08em; text-transform: uppercase; }
+.text-btn { font-size: 12px; color: var(--accent); padding: 4px 10px;
+            border-radius: 6px; transition: all var(--transition); }
+.text-btn:hover { background: var(--accent-dim); }
+
+.presets-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; }
+.preset-btn { border-radius: var(--radius-sm); border: 1px solid var(--border);
+              background: var(--surface-2); padding: 10px 4px; display: flex;
+              flex-direction: column; align-items: center; gap: 4px;
+              transition: all var(--transition); }
+.preset-btn:hover { border-color: var(--border-strong); background: var(--surface-3); }
+.preset-btn:active { transform: scale(.94); }
+.preset-btn.active { border-color: var(--accent); background: var(--accent-dim); }
+.preset-num { font-size: 15px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+              color: var(--text-muted); line-height: 1; }
+.preset-btn.active .preset-num { color: var(--accent); }
+.preset-name { font-size: 9px; color: var(--text-faint); text-align: center;
+               white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+               width: 100%; padding: 0 2px; line-height: 1.2; }
+.preset-btn.active .preset-name { color: var(--text-muted); }
+
+/* ── Custom Radio Editor ─────────────────────────────────────────────── */
+.radio-editor { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.radio-row { display: grid; grid-template-columns: 28px 1fr 1fr auto; gap: 6px; align-items: center; }
+.radio-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+             color: var(--text-faint); text-align: center; }
+.radio-input { background: var(--surface-3); border: 1px solid var(--border);
+               border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text);
+               outline: none; transition: border-color var(--transition); width: 100%; }
+.radio-input:focus { border-color: var(--accent); }
+.radio-input::placeholder { color: var(--text-faint); }
+.play-radio-btn { width: 28px; height: 28px; border-radius: 6px; display: flex;
+                  align-items: center; justify-content: center; background: var(--accent-dim);
+                  color: var(--accent); flex-shrink: 0; transition: all var(--transition); }
+.play-radio-btn:hover { background: var(--accent); color: #000; }
+
+/* ── Setup Overlay ───────────────────────────────────────────────────── */
+.overlay { position: fixed; inset: 0; background: var(--bg);
+           display: flex; align-items: center; justify-content: center;
+           z-index: 100; padding: 24px; }
+.overlay.hidden { display: none; }
+.setup-card { background: var(--surface); border: 1px solid var(--border);
+              border-radius: 20px; padding: 36px 32px; width: 100%; max-width: 420px;
+              text-align: center; box-shadow: var(--shadow); }
+.setup-logo { margin: 0 auto 20px; color: var(--accent); }
+.setup-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.setup-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+.setup-input { width: 100%; padding: 12px 16px; border-radius: 10px;
+               border: 1px solid var(--border); background: var(--surface-2);
+               color: var(--text); font-size: 16px; outline: none; text-align: center;
+               letter-spacing: .02em; transition: border-color var(--transition); margin-bottom: 12px; }
+.setup-input:focus { border-color: var(--accent); }
+.setup-btn { width: 100%; padding: 13px; border-radius: 10px;
+             background: var(--accent); color: #000; font-size: 15px; font-weight: 600;
+             transition: all var(--transition); }
+.setup-btn:hover { background: var(--accent-hover); }
+.setup-error { color: var(--danger); font-size: 12px; margin-top: 8px; min-height: 18px; }
+
+/* ── Settings Modal ──────────────────────────────────────────────────── */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6);
+            display: flex; align-items: flex-end; justify-content: center;
+            z-index: 50; padding: 16px; backdrop-filter: blur(4px); }
+.modal-bg.hidden { display: none; }
+.modal { background: var(--surface); border: 1px solid var(--border);
+         border-radius: 20px 20px 16px 16px; padding: 28px 24px;
+         width: 100%; max-width: 480px; box-shadow: var(--shadow); }
+.modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+.modal label { display: block; font-size: 12px; color: var(--text-muted);
+               margin-bottom: 6px; font-weight: 500; }
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+.btn { padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600;
+       transition: all var(--transition); }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-ghost { border: 1px solid var(--border); color: var(--text-muted); }
+.btn-ghost:hover { background: var(--surface-3); color: var(--text); }
+
+/* ── Toast ───────────────────────────────────────────────────────────── */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 200;
+                   display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 500;
+         box-shadow: var(--shadow); animation: slideIn .25s ease;
+         background: var(--surface-3); border: 1px solid var(--border); }
+.toast.error   { background: rgba(248,113,113,.15); border-color: var(--danger); color: var(--danger); }
+.toast.success { background: rgba(74,222,128,.12);  border-color: var(--success); color: var(--success); }
+@keyframes slideIn { from { opacity:0; transform: translateX(12px); } }
+
+/* ── Misc ────────────────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+.divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
+@media (max-width: 400px) {
+  .presets-grid { grid-template-columns: repeat(3,1fr); }
+  .sources-grid { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Setup Overlay ─────────────────────────────────────────────────── -->
+<div class="overlay" id="setup-overlay">
+  <div class="setup-card">
+    <svg class="setup-logo" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-label="SoundTouch Logo">
+      <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="2"/>
+      <circle cx="24" cy="24" r="10" stroke="currentColor" stroke-width="2"/>
+      <circle cx="24" cy="24" r="3" fill="currentColor"/>
+      <line x1="24" y1="2" x2="24" y2="14" stroke="currentColor" stroke-width="2"/>
+      <line x1="24" y1="34" x2="24" y2="46" stroke="currentColor" stroke-width="2"/>
+    </svg>
+    <h1>SoundTouch Controller</h1>
+    <p>Entrez l'adresse IP de votre SoundTouch 30 sur le réseau local</p>
+    <input class="setup-input" id="setup-ip" type="text" placeholder="192.168.1.xxx"
+           autocomplete="off" inputmode="decimal" spellcheck="false">
+    <button class="setup-btn" id="setup-connect-btn">Connecter</button>
+    <div class="setup-error" id="setup-error"></div>
+  </div>
+</div>
+
+<!-- ── Settings Modal ────────────────────────────────────────────────── -->
+<div class="modal-bg hidden" id="settings-modal">
+  <div class="modal">
+    <h2>Paramètres</h2>
+    <label>Adresse IP du SoundTouch</label>
+    <input class="radio-input" id="settings-ip" style="width:100%;margin-bottom:4px;" placeholder="192.168.1.xxx">
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="settings-save-btn">Enregistrer</button>
+      <button class="btn btn-ghost" id="settings-cancel-btn">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast container ───────────────────────────────────────────────── -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- ── App ───────────────────────────────────────────────────────────── -->
+<div class="app hidden" id="app">
+  <!-- Header -->
+  <header>
+    <svg class="logo-svg" width="32" height="32" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="2"/>
+      <circle cx="24" cy="24" r="10" stroke="currentColor" stroke-width="2"/>
+      <circle cx="24" cy="24" r="3" fill="currentColor"/>
+      <line x1="24" y1="2" x2="24" y2="14" stroke="currentColor" stroke-width="2"/>
+      <line x1="24" y1="34" x2="24" y2="46" stroke="currentColor" stroke-width="2"/>
+    </svg>
+    <div class="device-info">
+      <div class="device-name" id="device-name">SoundTouch 30</div>
+      <div class="device-sub">
+        <span class="status-pill connecting" id="status-pill">
+          <span class="dot pulse"></span>
+          <span id="status-label">Connexion…</span>
+        </span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="settings-btn" aria-label="Paramètres">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </button>
+      <button class="icon-btn" id="theme-toggle-btn" aria-label="Thème">
+        <svg id="theme-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Now Playing -->
+  <div class="card">
+    <div class="card-title">En lecture</div>
+    <div class="now-playing">
+      <div class="art-wrap" id="art-wrap">
+        <img id="album-art" src="" alt="Pochette" style="display:none;">
+        <span class="art-placeholder" id="art-placeholder">♫</span>
+      </div>
+      <div class="track-info">
+        <div class="track-station" id="np-station">—</div>
+        <div class="track-title"  id="np-track"></div>
+        <div class="track-artist" id="np-artist"></div>
+        <div class="play-badge stopped" id="play-badge">
+          <span class="dot"></span><span id="play-status-text">Arrêté</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transport -->
+  <div class="card">
+    <div class="card-title">Transport</div>
+    <div class="transport-row">
+      <button class="t-btn" data-key="PREV_TRACK" aria-label="Précédent">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+      </button>
+      <button class="t-btn" data-key="STOP" aria-label="Stop">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+      </button>
+      <button class="t-btn primary" id="play-pause-btn" aria-label="Lecture/Pause">
+        <svg id="pp-icon-play" width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="pp-icon-pause" width="22" height="22" fill="currentColor" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg>
+      </button>
+      <button class="t-btn" data-key="NEXT_TRACK" aria-label="Suivant">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5 3.9V8.1L8.5 12zM16 6h2v12h-2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Volume -->
+  <div class="card">
+    <div class="card-title">Volume</div>
+    <div class="slider-row">
+      <button class="mute-btn" id="mute-btn" aria-label="Mute">
+        <svg id="vol-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+      </button>
+      <div class="slider-wrap">
+        <input type="range" id="volume-slider" min="0" max="100" value="30">
+      </div>
+      <div class="slider-val" id="volume-val">30</div>
+    </div>
+  </div>
+
+  <!-- Bass -->
+  <div class="card hidden" id="bass-card">
+    <div class="card-title">Basses</div>
+    <div class="slider-row">
+      <span class="slider-label" style="font-size:18px;text-align:center;">𝅘𝅥𝅱</span>
+      <div class="slider-wrap">
+        <input type="range" id="bass-slider" min="-9" max="9" value="0">
+      </div>
+      <div class="slider-val" id="bass-val">0</div>
+    </div>
+  </div>
+
+  <!-- Sources -->
+  <div class="card">
+    <div class="section-head">
+      <div class="card-title" style="margin-bottom:0">Sources</div>
+    </div>
+    <div class="sources-grid" id="sources-grid">
+      <button class="source-btn" data-src="BLUETOOTH" data-acct="" aria-label="Bluetooth">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>
+        Bluetooth
+      </button>
+      <button class="source-btn" data-src="PRODUCT" data-acct="TV" aria-label="TV / HDMI">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3l-4 4-4-4"/></svg>
+        TV / HDMI
+      </button>
+      <button class="source-btn" data-src="AUX" data-acct="AUX" aria-label="AUX">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        AUX
+      </button>
+    </div>
+  </div>
+
+  <!-- Presets + Custom Radio -->
+  <div class="card">
+    <div class="section-head">
+      <div class="card-title" style="margin-bottom:0">Présets &amp; Radio</div>
+      <button class="text-btn" id="edit-radio-btn">✏ Modifier radios</button>
+    </div>
+    <div class="presets-grid" id="presets-grid">
+      <button class="preset-btn" data-preset="1"><span class="preset-num">1</span><span class="preset-name">—</span></button>
+      <button class="preset-btn" data-preset="2"><span class="preset-num">2</span><span class="preset-name">—</span></button>
+      <button class="preset-btn" data-preset="3"><span class="preset-num">3</span><span class="preset-name">—</span></button>
+      <button class="preset-btn" data-preset="4"><span class="preset-num">4</span><span class="preset-name">—</span></button>
+      <button class="preset-btn" data-preset="5"><span class="preset-num">5</span><span class="preset-name">—</span></button>
+      <button class="preset-btn" data-preset="6"><span class="preset-num">6</span><span class="preset-name">—</span></button>
+    </div>
+
+    <!-- Custom Radio Editor -->
+    <div class="hidden" id="radio-editor">
+      <div class="divider" style="margin-top:16px;"></div>
+      <p style="font-size:11px;color:var(--text-faint);margin-bottom:10px;">
+        Radios personnalisées — remplacent les présets de l'appareil lors du clic
+      </p>
+      <div class="radio-editor" id="radio-rows"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button class="btn btn-primary" id="save-radio-btn">Enregistrer</button>
+        <button class="btn btn-ghost"   id="cancel-radio-btn">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info bas de page -->
+  <div style="text-align:center;font-size:11px;color:var(--text-faint);margin-top:8px;">
+    Bose SoundTouch Controller · Port 8090 (HTTP) · 8080 (WS)
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+// ── State ──────────────────────────────────────────────────────────────
+const S = {
+  ip: null, connected: false, wsConnected: false,
+  volume: 30, muted: false,
+  bass: 0, bassMin: -9, bassMax: 9, bassAvailable: false,
+  playing: false, playStatus: 'STOP_STATE',
+  nowPlaying: {},
+  currentSource: '', currentSourceAcct: '',
+  activePreset: 0,
+  devicePresets: Array(6).fill(null),  // from /presets
+  customRadio: JSON.parse(localStorage.getItem('st_custom_radio') ||
+    JSON.stringify(Array(6).fill({ name: '', url: '' }))),
+};
+
+let ws = null, wsTimer = null;
+const xmlp = new DOMParser();
+const parse = s => xmlp.parseFromString(s, 'text/xml');
+const txt   = (doc, sel) => { const e = doc.querySelector(sel); return e ? e.textContent.trim() : ''; };
+
+// ── Toast ──────────────────────────────────────────────────────────────
+function toast(msg, type = '') {
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' ' + type : '');
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ── API ────────────────────────────────────────────────────────────────
+async function apiGet(path) {
+  const r = await fetch('/api' + path);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return parse(await r.text());
+}
+async function apiPost(path, body) {
+  const r = await fetch('/api' + path, {
+    method: 'POST', headers: { 'Content-Type': 'text/xml' }, body
+  });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return parse(await r.text());
+}
+async function sendKey(key) {
+  try {
+    await apiPost('/key', `<key state="press"   sender="Gabbo">${key}</key>`);
+    await apiPost('/key', `<key state="release" sender="Gabbo">${key}</key>`);
+  } catch(e) { toast('Erreur clé : ' + e.message, 'error'); }
+}
+
+// ── Refresh functions ─────────────────────────────────────────────────
+async function refreshNowPlaying() {
+  try {
+    const doc = await apiGet('/now_playing');
+    const np = S.nowPlaying = {};
+    np.source    = doc.querySelector('nowPlaying')?.getAttribute('source') || '';
+    np.station   = txt(doc, 'stationName') || txt(doc, 'itemName') || np.source;
+    np.track     = txt(doc, 'track');
+    np.artist    = txt(doc, 'artist');
+    np.album     = txt(doc, 'album');
+    np.artUrl    = txt(doc, 'art');
+    np.artStatus = doc.querySelector('art')?.getAttribute('artImageStatus') || '';
+    S.playStatus = txt(doc, 'playStatus') || 'STOP_STATE';
+    S.playing    = S.playStatus === 'PLAY_STATE';
+    // detect current source
+    const ci = doc.querySelector('ContentItem');
+    if (ci) {
+      S.currentSource    = ci.getAttribute('source') || '';
+      S.currentSourceAcct= ci.getAttribute('sourceAccount') || '';
+    }
+    renderNowPlaying();
+    renderSources();
+  } catch {}
+}
+
+async function refreshVolume() {
+  try {
+    const doc = await apiGet('/volume');
+    S.volume = parseInt(txt(doc, 'actualvolume')) || 0;
+    S.muted  = txt(doc, 'muteenabled') === 'true';
+    renderVolume();
+  } catch {}
+}
+
+async function refreshBass() {
+  if (!S.bassAvailable) return;
+  try {
+    const doc = await apiGet('/bass');
+    S.bass = parseInt(txt(doc, 'actualbass')) || 0;
+    renderBass();
+  } catch {}
+}
+
+async function refreshBassCapabilities() {
+  try {
+    const doc = await apiGet('/bassCapabilities');
+    S.bassAvailable = txt(doc, 'bassAvailable') === 'true';
+    S.bassMin = parseInt(txt(doc, 'bassMin')) || -9;
+    S.bassMax = parseInt(txt(doc, 'bassMax')) ||  9;
+    const card = document.getElementById('bass-card');
+    if (S.bassAvailable) {
+      card.classList.remove('hidden');
+      document.getElementById('bass-slider').min = S.bassMin;
+      document.getElementById('bass-slider').max = S.bassMax;
+    }
+  } catch {}
+}
+
+async function refreshPresets() {
+  try {
+    const doc = await apiGet('/presets');
+    const items = doc.querySelectorAll('preset');
+    items.forEach(p => {
+      const id = parseInt(p.getAttribute('id')) - 1;
+      if (id >= 0 && id < 6) {
+        const ci = p.querySelector('ContentItem');
+        S.devicePresets[id] = {
+          name: ci ? txt(p, 'itemName') || ci.getAttribute('source') : '—',
+          source: ci ? ci.getAttribute('source') : '',
+          location: ci ? ci.getAttribute('location') : '',
+          sourceAccount: ci ? ci.getAttribute('sourceAccount') : '',
+        };
+      }
+    });
+    renderPresets();
+  } catch {}
+}
+
+async function refreshDeviceInfo() {
+  try {
+    const doc = await apiGet('/info');
+    const name = txt(doc, 'name');
+    if (name) document.getElementById('device-name').textContent = name;
+  } catch {}
+}
+
+async function refreshAll() {
+  setStatus('connecting');
+  try {
+    await refreshDeviceInfo();
+    await refreshBassCapabilities();
+    await Promise.all([refreshNowPlaying(), refreshVolume(), refreshBass(), refreshPresets()]);
+    setStatus('connected');
+  } catch(e) {
+    setStatus('disconnected');
+    toast('Impossible de joindre le SoundTouch', 'error');
+  }
+}
+
+// ── Render ─────────────────────────────────────────────────────────────
+function renderNowPlaying() {
+  const np = S.nowPlaying;
+  document.getElementById('np-station').textContent = np.station || '—';
+  document.getElementById('np-track').textContent   = np.track  || '';
+  document.getElementById('np-artist').textContent  = np.artist || '';
+
+  // Album art
+  const img  = document.getElementById('album-art');
+  const ph   = document.getElementById('art-placeholder');
+  if (np.artUrl && np.artStatus === 'IMAGE_PRESENT') {
+    img.src = np.artUrl; img.style.display = ''; ph.style.display = 'none';
+    img.onerror = () => { img.style.display='none'; ph.style.display=''; };
+  } else { img.style.display = 'none'; ph.style.display = ''; }
+
+  // Play badge
+  const badge  = document.getElementById('play-badge');
+  const btext  = document.getElementById('play-status-text');
+  const ppPlay = document.getElementById('pp-icon-play');
+  const ppPause= document.getElementById('pp-icon-pause');
+  badge.className = 'play-badge';
+  if (S.playStatus === 'PLAY_STATE') {
+    badge.classList.add(''); btext.textContent = 'Lecture';
+    badge.querySelector('.dot').classList.add('pulse');
+    ppPlay.style.display = 'none'; ppPause.style.display = '';
+  } else if (S.playStatus === 'PAUSE_STATE') {
+    badge.classList.add('paused'); btext.textContent = 'Pause';
+    badge.querySelector('.dot').classList.remove('pulse');
+    ppPlay.style.display = ''; ppPause.style.display = 'none';
+  } else {
+    badge.classList.add('stopped'); btext.textContent = 'Arrêté';
+    badge.querySelector('.dot').classList.remove('pulse');
+    ppPlay.style.display = ''; ppPause.style.display = 'none';
+  }
+}
+
+function renderVolume() {
+  const sl  = document.getElementById('volume-slider');
+  const val = document.getElementById('volume-val');
+  sl.value  = S.volume;
+  val.textContent = S.volume;
+  // Slider fill (visual trick)
+  const pct = S.volume;
+  sl.style.background = `linear-gradient(to right, var(--accent) ${pct}%, var(--surface-3) ${pct}%)`;
+  // Mute
+  const btn = document.getElementById('mute-btn');
+  btn.classList.toggle('muted', S.muted);
+}
+
+function renderBass() {
+  const sl  = document.getElementById('bass-slider');
+  const val = document.getElementById('bass-val');
+  sl.value = S.bass;
+  val.textContent = S.bass > 0 ? '+' + S.bass : S.bass;
+  const range = S.bassMax - S.bassMin;
+  const pct   = ((S.bass - S.bassMin) / range) * 100;
+  sl.style.background = `linear-gradient(to right, var(--accent) ${pct}%, var(--surface-3) ${pct}%)`;
+}
+
+function renderSources() {
+  document.querySelectorAll('.source-btn').forEach(btn => {
+    const src  = btn.dataset.src;
+    const acct = btn.dataset.acct;
+    btn.classList.toggle('active',
+      src === S.currentSource &&
+      (acct === '' || acct === S.currentSourceAcct));
+  });
+}
+
+function renderPresets() {
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    const n  = parseInt(btn.dataset.preset);
+    const p  = S.devicePresets[n - 1];
+    const cr = S.customRadio[n - 1];
+    let name = '—';
+    if (cr && cr.name) name = cr.name;
+    else if (p && p.name) name = p.name;
+    btn.querySelector('.preset-name').textContent = name;
+  });
+}
+
+// ── Status ─────────────────────────────────────────────────────────────
+function setStatus(st) {
+  const pill  = document.getElementById('status-pill');
+  const label = document.getElementById('status-label');
+  const dot   = pill.querySelector('.dot');
+  pill.className  = 'status-pill ' + st;
+  dot.className   = 'dot' + (st === 'connecting' ? ' pulse' : '');
+  label.textContent = st === 'connected' ? 'Connecté'
+    : st === 'disconnected' ? 'Déconnecté' : 'Connexion…';
+  S.connected = st === 'connected';
+}
+
+// ── WebSocket ──────────────────────────────────────────────────────────
+function connectWS() {
+  if (ws) { try { ws.close(); } catch {} }
+  clearTimeout(wsTimer);
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws`);
+
+  ws.onopen = () => { S.wsConnected = true; };
+
+  ws.onmessage = e => {
+    // App-internal JSON messages
+    try {
+      const j = JSON.parse(e.data);
+      if (j._app === 'ws_connected')    { setStatus('connected'); return; }
+      if (j._app === 'ws_disconnected') { setStatus('disconnected'); return; }
+      if (j._app === 'ws_error')        { return; }
+    } catch {}
+    // Bose XML
+    try {
+      const doc = parse(e.data);
+      if (doc.querySelector('volumeUpdated'))    refreshVolume();
+      if (doc.querySelector('nowPlayingUpdated')) refreshNowPlaying();
+      if (doc.querySelector('bassUpdated'))       refreshBass();
+      if (doc.querySelector('presetsUpdated') || doc.querySelector('PresetsChangedNotifyUI'))
+        refreshPresets();
+      if (doc.querySelector('sourcesUpdated') || doc.querySelector('SourcesChange'))
+        refreshNowPlaying();
+    } catch {}
+  };
+
+  ws.onclose = () => {
+    S.wsConnected = false;
+    setStatus('disconnected');
+    wsTimer = setTimeout(connectWS, 4000);
+  };
+  ws.onerror = () => {
+    S.wsConnected = false;
+    setStatus('disconnected');
+  };
+}
+
+// ── User actions ───────────────────────────────────────────────────────
+async function setVolume(v) {
+  S.volume = v;
+  renderVolume();
+  try { await apiPost('/volume', `<volume>${v}</volume>`); }
+  catch(e) { toast('Erreur volume : ' + e.message, 'error'); }
+}
+
+async function toggleMute() {
+  S.muted = !S.muted;
+  renderVolume();
+  try { await apiPost('/volume', `<volume>${S.volume}<muteenabled>${S.muted}</muteenabled></volume>`); }
+  catch(e) { toast('Erreur mute : ' + e.message, 'error'); }
+}
+
+async function setBass(v) {
+  S.bass = v;
+  renderBass();
+  try { await apiPost('/bass', `<bass>${v}</bass>`); }
+  catch(e) { toast('Erreur basses : ' + e.message, 'error'); }
+}
+
+async function selectSource(src, acct) {
+  const xml = acct
+    ? `<ContentItem source="${src}" sourceAccount="${acct}"></ContentItem>`
+    : `<ContentItem source="${src}"></ContentItem>`;
+  try {
+    await apiPost('/select', xml);
+    toast(`Source ${src} sélectionnée`);
+    setTimeout(refreshNowPlaying, 1000);
+  } catch(e) { toast('Erreur source : ' + e.message, 'error'); }
+}
+
+async function activatePreset(n) {
+  const cr = S.customRadio[n - 1];
+  if (cr && cr.url) {
+    // Custom radio
+    const name = cr.name || `Radio ${n}`;
+    const url  = cr.url;
+    try {
+      await apiPost('/select',
+        `<ContentItem source="INTERNET_RADIO" location="${url}" sourceAccount="" isPresetable="false"><itemName>${name}</itemName></ContentItem>`);
+      toast(`Lecture : ${name}`);
+      setTimeout(refreshNowPlaying, 1500);
+    } catch(e) {
+      // Fallback to device preset
+      await sendKey(`PRESET_${n}`);
+    }
+  } else {
+    // Device preset
+    await sendKey(`PRESET_${n}`);
+    setTimeout(refreshNowPlaying, 1500);
+  }
+}
+
+function togglePlayPause() {
+  if (S.playStatus === 'PLAY_STATE') sendKey('PAUSE');
+  else sendKey('PLAY');
+  // Optimistic UI
+  S.playStatus = S.playStatus === 'PLAY_STATE' ? 'PAUSE_STATE' : 'PLAY_STATE';
+  S.playing    = S.playStatus === 'PLAY_STATE';
+  renderNowPlaying();
+}
+
+// ── Init ───────────────────────────────────────────────────────────────
+async function init() {
+  // Load server config
+  try {
+    const r = await fetch('/config');
+    const c = await r.json();
+    S.ip = c.ip;
+  } catch {}
+
+  if (S.ip) {
+    showApp();
+  } else {
+    document.getElementById('setup-overlay').classList.remove('hidden');
+  }
+}
+
+function showApp() {
+  document.getElementById('setup-overlay').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  renderPresets(); // show custom radio names immediately
+  refreshAll();
+  connectWS();
+}
+
+async function saveIp(ip) {
+  S.ip = ip;
+  await fetch('/config', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ip })
+  });
+}
+
+// ── Custom radio editor ────────────────────────────────────────────────
+let editRadioData = [];
+
+function openRadioEditor() {
+  editRadioData = S.customRadio.map(r => ({ ...r }));
+  const container = document.getElementById('radio-rows');
+  container.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const row = document.createElement('div');
+    row.className = 'radio-row';
+    const cr = editRadioData[i] || { name: '', url: '' };
+    row.innerHTML = `
+      <span class="radio-num">${i + 1}</span>
+      <input class="radio-input" data-field="name" data-idx="${i}" placeholder="Nom (ex: CJPX Jazz)" value="${cr.name || ''}">
+      <input class="radio-input" data-field="url"  data-idx="${i}" placeholder="URL stream" value="${cr.url || ''}">
+      <button class="play-radio-btn" data-idx="${i}" title="Tester">
+        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>`;
+    container.appendChild(row);
+  }
+  document.getElementById('radio-editor').classList.remove('hidden');
+  document.getElementById('edit-radio-btn').classList.add('hidden');
+}
+
+function saveRadioEditor() {
+  document.querySelectorAll('#radio-rows .radio-input').forEach(inp => {
+    const i = parseInt(inp.dataset.idx);
+    if (!editRadioData[i]) editRadioData[i] = { name: '', url: '' };
+    editRadioData[i][inp.dataset.field] = inp.value.trim();
+  });
+  S.customRadio = editRadioData;
+  localStorage.setItem('st_custom_radio', JSON.stringify(S.customRadio));
+  renderPresets();
+  closeRadioEditor();
+  toast('Radios enregistrées', 'success');
+}
+
+function closeRadioEditor() {
+  document.getElementById('radio-editor').classList.add('hidden');
+  document.getElementById('edit-radio-btn').classList.remove('hidden');
+}
+
+// ── Theme ──────────────────────────────────────────────────────────────
+let darkMode = localStorage.getItem('st_theme') !== 'light';
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+  const icon = document.getElementById('theme-icon');
+  if (darkMode) {
+    icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+  } else {
+    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  }
+}
+applyTheme();
+
+// ── Event listeners ────────────────────────────────────────────────────
+// Setup
+document.getElementById('setup-connect-btn').addEventListener('click', async () => {
+  const ip = document.getElementById('setup-ip').value.trim();
+  if (!ip) return;
+  document.getElementById('setup-error').textContent = '';
+  const btn = document.getElementById('setup-connect-btn');
+  btn.textContent = 'Connexion…'; btn.disabled = true;
+  await saveIp(ip);
+  showApp();
+  btn.textContent = 'Connecter'; btn.disabled = false;
+});
+document.getElementById('setup-ip').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('setup-connect-btn').click();
+});
+
+// Transport
+document.querySelectorAll('[data-key]').forEach(btn => {
+  btn.addEventListener('click', () => sendKey(btn.dataset.key));
+});
+document.getElementById('play-pause-btn').addEventListener('click', togglePlayPause);
+
+// Volume
+const volSlider = document.getElementById('volume-slider');
+let volTimer;
+volSlider.addEventListener('input', () => {
+  S.volume = parseInt(volSlider.value);
+  document.getElementById('volume-val').textContent = S.volume;
+  const pct = S.volume;
+  volSlider.style.background = `linear-gradient(to right, var(--accent) ${pct}%, var(--surface-3) ${pct}%)`;
+  clearTimeout(volTimer);
+  volTimer = setTimeout(() => setVolume(S.volume), 200);
+});
+document.getElementById('mute-btn').addEventListener('click', toggleMute);
+
+// Bass
+const bassSlider = document.getElementById('bass-slider');
+let bassTimer;
+bassSlider.addEventListener('input', () => {
+  S.bass = parseInt(bassSlider.value);
+  const v = S.bass;
+  document.getElementById('bass-val').textContent = v > 0 ? '+' + v : v;
+  const range = S.bassMax - S.bassMin;
+  const pct = ((v - S.bassMin) / range) * 100;
+  bassSlider.style.background = `linear-gradient(to right, var(--accent) ${pct}%, var(--surface-3) ${pct}%)`;
+  clearTimeout(bassTimer);
+  bassTimer = setTimeout(() => setBass(v), 250);
+});
+
+// Sources
+document.querySelectorAll('.source-btn').forEach(btn => {
+  btn.addEventListener('click', () => selectSource(btn.dataset.src, btn.dataset.acct));
+});
+
+// Presets
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => activatePreset(parseInt(btn.dataset.preset)));
+});
+
+// Radio editor
+document.getElementById('edit-radio-btn').addEventListener('click', openRadioEditor);
+document.getElementById('save-radio-btn').addEventListener('click', saveRadioEditor);
+document.getElementById('cancel-radio-btn').addEventListener('click', closeRadioEditor);
+document.getElementById('radio-rows').addEventListener('click', e => {
+  const btn = e.target.closest('.play-radio-btn');
+  if (!btn) return;
+  const i   = parseInt(btn.dataset.idx);
+  const url = document.querySelector(`[data-field="url"][data-idx="${i}"]`).value.trim();
+  const name= document.querySelector(`[data-field="name"][data-idx="${i}"]`).value.trim() || `Radio ${i+1}`;
+  if (!url) { toast('Entrez une URL de flux', 'error'); return; }
+  apiPost('/select', `<ContentItem source="INTERNET_RADIO" location="${url}" sourceAccount="" isPresetable="false"><itemName>${name}</itemName></ContentItem>`)
+    .then(() => toast(`Test : ${name}`))
+    .catch(() => toast('Source non supportée sur cet appareil', 'error'));
+});
+
+// Settings modal
+document.getElementById('settings-btn').addEventListener('click', () => {
+  document.getElementById('settings-ip').value = S.ip || '';
+  document.getElementById('settings-modal').classList.remove('hidden');
+});
+document.getElementById('settings-cancel-btn').addEventListener('click', () => {
+  document.getElementById('settings-modal').classList.add('hidden');
+});
+document.getElementById('settings-save-btn').addEventListener('click', async () => {
+  const ip = document.getElementById('settings-ip').value.trim();
+  if (!ip) return;
+  await saveIp(ip);
+  document.getElementById('settings-modal').classList.add('hidden');
+  toast('IP enregistrée — reconnexion…');
+  setTimeout(() => { refreshAll(); connectWS(); }, 500);
+});
+document.getElementById('settings-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('settings-modal'))
+    document.getElementById('settings-modal').classList.add('hidden');
+});
+
+// Theme
+document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+  darkMode = !darkMode;
+  localStorage.setItem('st_theme', darkMode ? 'dark' : 'light');
+  applyTheme();
+});
+
+// ── Boot ───────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

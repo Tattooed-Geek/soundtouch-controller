@@ -1,0 +1,12 @@
+{
+  "name": "soundtouch-controller",
+  "version": "1.0.0",
+  "description": "Bose SoundTouch 30 – Web Controller local",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

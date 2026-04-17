@@ -1,0 +1,4 @@
+node_modules/
+.bose-config.json
+.DS_Store
+*.log
