@@ -8,274 +8,748 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* ── Reset & Tokens ─────────────────────────────────────────────────── */
+/* ── Reset & Base ─────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
-body { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.5;
-       background: var(--bg); color: var(--text); min-height: 100dvh;
-       transition: background .25s, color .25s; }
+body {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  transition: background .35s, color .35s;
+  overflow-x: hidden;
+}
 button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
 input  { font: inherit; color: inherit; }
 img    { display: block; max-width: 100%; }
 
-/* ── Dark / Light ────────────────────────────────────────────────────── */
+/* ── Tokens Dark ─────────────────────────────────────────────────────── */
 :root, [data-theme="dark"] {
-  --bg:           #0c0c0e;
-  --surface:      #17171a;
-  --surface-2:    #1f1f23;
-  --surface-3:    #28282d;
-  --border:       rgba(255,255,255,.07);
-  --border-strong:rgba(255,255,255,.14);
-  --text:         #f0f0f2;
-  --text-muted:   #8a8a93;
-  --text-faint:   #44444c;
-  --accent:       #00c8d8;
-  --accent-hover: #00e0f2;
-  --accent-dim:   rgba(0,200,216,.15);
-  --danger:       #f87171;
-  --success:      #4ade80;
-  --warn:         #fb923c;
-  --shadow:       0 4px 24px rgba(0,0,0,.5);
-  --radius:       12px;
-  --radius-sm:    8px;
-  --transition:   180ms cubic-bezier(.16,1,.3,1);
+  --bg:             #080810;
+  --bg-grad-1:      #0d0d1a;
+  --bg-grad-2:      #060612;
+  --surface:        rgba(255,255,255,.045);
+  --surface-solid:  #111120;
+  --surface-2:      rgba(255,255,255,.07);
+  --surface-3:      rgba(255,255,255,.1);
+  --surface-hover:  rgba(255,255,255,.12);
+  --border:         rgba(255,255,255,.09);
+  --border-strong:  rgba(255,255,255,.18);
+  --border-glow:    rgba(99,102,241,.5);
+  --text:           #e8e8f4;
+  --text-muted:     #8888aa;
+  --text-faint:     #3e3e5a;
+  --accent:         #7c6ef5;
+  --accent-2:       #5e9af0;
+  --accent-hover:   #9585ff;
+  --accent-dim:     rgba(124,110,245,.18);
+  --accent-glow:    rgba(124,110,245,.35);
+  --danger:         #f87171;
+  --success:        #4ade80;
+  --warn:           #fb923c;
+  --shadow-sm:      0 2px 8px rgba(0,0,0,.4);
+  --shadow-md:      0 8px 32px rgba(0,0,0,.6);
+  --shadow-lg:      0 20px 60px rgba(0,0,0,.8);
+  --shadow-glow:    0 0 40px rgba(124,110,245,.2);
+  --radius:         16px;
+  --radius-sm:      10px;
+  --radius-xs:      7px;
+  --transition:     180ms cubic-bezier(.16,1,.3,1);
+  --glass-bg:       rgba(14,14,28,.75);
+  --glass-blur:     blur(24px) saturate(180%);
 }
+
+/* ── Tokens Light ────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg:           #f1f1f4;
-  --surface:      #ffffff;
-  --surface-2:    #f5f5f8;
-  --surface-3:    #eaeaee;
-  --border:       rgba(0,0,0,.08);
-  --border-strong:rgba(0,0,0,.16);
-  --text:         #18181c;
-  --text-muted:   #65656e;
-  --text-faint:   #a8a8b0;
-  --accent:       #0098a8;
-  --accent-hover: #007888;
-  --accent-dim:   rgba(0,152,168,.12);
-  --danger:       #dc2626;
-  --success:      #16a34a;
-  --warn:         #ea580c;
-  --shadow:       0 4px 24px rgba(0,0,0,.12);
+  --bg:             #f0f0f8;
+  --bg-grad-1:      #ebebf5;
+  --bg-grad-2:      #e6e6f2;
+  --surface:        rgba(255,255,255,.75);
+  --surface-solid:  #ffffff;
+  --surface-2:      rgba(255,255,255,.55);
+  --surface-3:      rgba(0,0,0,.05);
+  --surface-hover:  rgba(0,0,0,.07);
+  --border:         rgba(0,0,0,.09);
+  --border-strong:  rgba(0,0,0,.18);
+  --border-glow:    rgba(99,102,241,.4);
+  --text:           #18182a;
+  --text-muted:     #62627a;
+  --text-faint:     #b0b0c8;
+  --accent:         #5b47e8;
+  --accent-2:       #3b7dd8;
+  --accent-hover:   #7060f5;
+  --accent-dim:     rgba(91,71,232,.12);
+  --accent-glow:    rgba(91,71,232,.25);
+  --danger:         #dc2626;
+  --success:        #16a34a;
+  --warn:           #ea580c;
+  --shadow-sm:      0 2px 8px rgba(0,0,0,.08);
+  --shadow-md:      0 8px 32px rgba(0,0,0,.12);
+  --shadow-lg:      0 20px 60px rgba(0,0,0,.18);
+  --shadow-glow:    0 0 40px rgba(91,71,232,.15);
+  --glass-bg:       rgba(240,240,248,.8);
+  --glass-blur:     blur(24px) saturate(160%);
+}
+
+/* ── Animated Background ─────────────────────────────────────────────── */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,110,245,.12) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 50% at 80% 80%, rgba(94,154,240,.1) 0%, transparent 50%),
+              radial-gradient(ellipse 50% 40% at 50% 50%, rgba(124,110,245,.05) 0%, transparent 70%),
+              var(--bg);
+  animation: bgDrift 20s ease-in-out infinite alternate;
+}
+@keyframes bgDrift {
+  0%   { opacity:1; }
+  50%  { opacity:.85; filter: hue-rotate(15deg); }
+  100% { opacity:1; filter: hue-rotate(0deg); }
+}
+[data-theme="light"] .bg-canvas {
+  background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(91,71,232,.08) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 50% at 80% 80%, rgba(59,125,216,.07) 0%, transparent 50%),
+              var(--bg);
 }
 
 /* ── Layout ──────────────────────────────────────────────────────────── */
-.app { display: flex; flex-direction: column; min-height: 100dvh; max-width: 640px;
-       margin: 0 auto; padding: 0 16px 32px; }
+.app {
+  display: flex; flex-direction: column;
+  min-height: 100dvh; max-width: 600px;
+  margin: 0 auto; padding: 0 16px 40px;
+}
+
+/* ── Glass Cards ─────────────────────────────────────────────────────── */
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), border-color var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+.card-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  opacity: .9;
+}
 
 /* ── Header ──────────────────────────────────────────────────────────── */
-header { display: flex; align-items: center; gap: 12px;
-         padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-.logo-svg { flex-shrink: 0; color: var(--accent); }
+header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  position: sticky; top: 0; z-index: 30;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+.logo-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.logo-svg { color: var(--accent); display: block; }
+.logo-glow {
+  position: absolute; inset: -8px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  animation: logoPulse 3s ease-in-out infinite;
+  border-radius: 50%;
+  pointer-events: none;
+}
+@keyframes logoPulse {
+  0%,100% { opacity:.5; transform: scale(1); }
+  50%      { opacity:1; transform: scale(1.1); }
+}
 .device-info { flex: 1; min-width: 0; }
-.device-name { font-size: 15px; font-weight: 600; color: var(--text);
-               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.device-sub  { font-size: 12px; color: var(--text-muted); }
-.header-actions { display: flex; gap: 8px; flex-shrink: 0; }
-.icon-btn { width: 36px; height: 36px; border-radius: 8px; display: flex;
-            align-items: center; justify-content: center; color: var(--text-muted);
-            border: 1px solid var(--border); transition: all var(--transition); }
-.icon-btn:hover { color: var(--text); background: var(--surface-3); }
+.device-name {
+  font-size: 16px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  letter-spacing: -.02em;
+}
+.device-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.header-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+}
+.icon-btn:hover {
+  color: var(--text);
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
 
-/* ── Status pill ─────────────────────────────────────────────────────── */
-.status-pill { display: inline-flex; align-items: center; gap: 6px;
-               padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 500; }
-.status-pill.connected    { background: rgba(74,222,128,.12); color: var(--success); }
-.status-pill.disconnected { background: rgba(248,113,113,.12); color: var(--danger); }
-.status-pill.connecting   { background: rgba(251,146,60,.12);  color: var(--warn); }
+/* ── Status Pill ─────────────────────────────────────────────────────── */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 99px;
+  font-size: 10px; font-weight: 600; letter-spacing: .04em;
+  backdrop-filter: blur(8px);
+}
+.status-pill.connected    { background: rgba(74,222,128,.15); color: var(--success); border: 1px solid rgba(74,222,128,.25); }
+.status-pill.disconnected { background: rgba(248,113,113,.15); color: var(--danger); border: 1px solid rgba(248,113,113,.25); }
+.status-pill.connecting   { background: rgba(251,146,60,.15); color: var(--warn); border: 1px solid rgba(251,146,60,.25); }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .dot.pulse { animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-/* ── Cards ───────────────────────────────────────────────────────────── */
-.card { background: var(--surface); border: 1px solid var(--border);
-        border-radius: var(--radius); padding: 20px; margin-bottom: 12px; }
-.card-title { font-size: 11px; font-weight: 600; color: var(--text-faint);
-              letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.8)} }
 
 /* ── Now Playing ─────────────────────────────────────────────────────── */
-.now-playing { display: flex; gap: 16px; align-items: flex-start; }
-.art-wrap { width: 80px; height: 80px; flex-shrink: 0; border-radius: 10px;
-            overflow: hidden; background: var(--surface-3); display: flex;
-            align-items: center; justify-content: center; }
+.now-playing-card {
+  background: linear-gradient(135deg, rgba(124,110,245,.15) 0%, rgba(94,154,240,.1) 50%, var(--glass-bg) 100%);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(124,110,245,.25);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+  position: relative;
+  overflow: hidden;
+}
+.now-playing-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(124,110,245,.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.now-playing { display: flex; gap: 18px; align-items: flex-start; }
+.art-wrap {
+  width: 88px; height: 88px; flex-shrink: 0;
+  border-radius: 14px; overflow: hidden;
+  background: rgba(124,110,245,.15);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4), 0 0 0 1px var(--border);
+  position: relative;
+}
 .art-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.art-placeholder { font-size: 28px; line-height: 1; }
-.track-info { flex: 1; min-width: 0; }
-.track-station { font-size: 13px; font-weight: 600; color: var(--text);
-                 white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.track-title  { font-size: 12px; color: var(--text-muted); margin-top: 3px;
-                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.track-artist { font-size: 12px; color: var(--text-faint); margin-top: 2px;
-                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.play-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
-              font-size: 10px; font-weight: 600; letter-spacing: .06em;
-              text-transform: uppercase; color: var(--accent); }
-.play-badge .dot { background: var(--accent); }
-.play-badge.paused { color: var(--text-faint); }
-.play-badge.paused .dot { background: var(--text-faint); animation: none; }
+.art-placeholder {
+  font-size: 32px; line-height: 1;
+  animation: artFloat 4s ease-in-out infinite;
+}
+@keyframes artFloat {
+  0%,100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-4px) scale(1.05); }
+}
+.track-info { flex: 1; min-width: 0; padding-top: 2px; }
+.track-station {
+  font-size: 15px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  letter-spacing: -.015em;
+}
+.track-title  {
+  font-size: 12px; color: var(--text-muted); margin-top: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.track-artist {
+  font-size: 12px; color: var(--text-faint); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.play-badge {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--accent);
+}
+.play-badge .dot { background: currentColor; }
+.play-badge.paused  { color: var(--text-faint); }
 .play-badge.stopped { color: var(--text-faint); }
-.play-badge.stopped .dot { background: var(--text-faint); animation: none; }
+
+/* ── Waveform animation ──────────────────────────────────────────────── */
+.waveform {
+  display: flex; align-items: flex-end; gap: 2px;
+  height: 20px; margin-top: 10px;
+}
+.waveform.paused .bar,
+.waveform.stopped .bar { animation-play-state: paused !important; opacity: .3; }
+.bar {
+  width: 3px; border-radius: 2px;
+  background: linear-gradient(to top, var(--accent), var(--accent-2));
+  animation: wave 1.2s ease-in-out infinite;
+}
+.bar:nth-child(1)  { animation-delay: 0s;    height: 60%; }
+.bar:nth-child(2)  { animation-delay: .1s;   height: 80%; }
+.bar:nth-child(3)  { animation-delay: .2s;   height: 100%; }
+.bar:nth-child(4)  { animation-delay: .05s;  height: 70%; }
+.bar:nth-child(5)  { animation-delay: .15s;  height: 50%; }
+.bar:nth-child(6)  { animation-delay: .25s;  height: 90%; }
+.bar:nth-child(7)  { animation-delay: .08s;  height: 65%; }
+.bar:nth-child(8)  { animation-delay: .18s;  height: 75%; }
+.bar:nth-child(9)  { animation-delay: .12s;  height: 85%; }
+.bar:nth-child(10) { animation-delay: .22s;  height: 55%; }
+.bar:nth-child(11) { animation-delay: .04s;  height: 70%; }
+.bar:nth-child(12) { animation-delay: .14s;  height: 45%; }
+@keyframes wave {
+  0%,100% { transform: scaleY(1); }
+  50%      { transform: scaleY(.35); }
+}
 
 /* ── Transport ───────────────────────────────────────────────────────── */
-.transport-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
-.t-btn { width: 48px; height: 48px; border-radius: 50%; display: flex;
-         align-items: center; justify-content: center; border: 1px solid var(--border);
-         color: var(--text-muted); transition: all var(--transition); }
-.t-btn:hover { color: var(--text); background: var(--surface-3); border-color: var(--border-strong); }
-.t-btn:active { transform: scale(.93); }
-.t-btn.primary { width: 56px; height: 56px; background: var(--accent);
-                 border-color: transparent; color: #000; }
-.t-btn.primary:hover { background: var(--accent-hover); }
+.transport-row {
+  display: flex; align-items: center;
+  justify-content: center; gap: 10px;
+}
+.t-btn {
+  width: 50px; height: 50px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: all var(--transition);
+  backdrop-filter: blur(8px);
+}
+.t-btn:hover {
+  color: var(--text);
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+.t-btn:active { transform: scale(.92); box-shadow: none; }
+.t-btn.primary {
+  width: 62px; height: 62px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 20px var(--accent-glow), var(--shadow-sm);
+}
+.t-btn.primary:hover {
+  box-shadow: 0 6px 30px var(--accent-glow), var(--shadow-md);
+  transform: translateY(-2px) scale(1.04);
+  filter: brightness(1.1);
+}
 .t-btn svg { pointer-events: none; }
 
-/* ── Sliders ─────────────────────────────────────────────────────────── */
+/* ── Volume / Sliders ────────────────────────────────────────────────── */
 .slider-row { display: flex; align-items: center; gap: 12px; }
 .slider-label { font-size: 12px; color: var(--text-muted); width: 36px; }
-.slider-wrap { flex: 1; position: relative; }
+.slider-wrap { flex: 1; }
 input[type="range"] {
   -webkit-appearance: none; appearance: none;
-  width: 100%; height: 4px; border-radius: 4px;
-  background: var(--surface-3); outline: none; cursor: pointer; }
+  width: 100%; height: 5px; border-radius: 5px;
+  background: var(--surface-3); outline: none; cursor: pointer;
+  transition: height var(--transition);
+}
+input[type="range"]:hover { height: 6px; }
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
-  background: var(--accent); border: 2px solid var(--bg); cursor: pointer;
-  transition: transform var(--transition); }
-input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.2); }
+  -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: 2px solid rgba(255,255,255,.3);
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--accent-glow);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.25);
+  box-shadow: 0 2px 16px var(--accent-glow);
+}
 input[type="range"]::-moz-range-thumb {
-  width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
-  border: 2px solid var(--bg); cursor: pointer; }
-.slider-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
-              color: var(--text); width: 36px; text-align: right; }
-.mute-btn { width: 32px; height: 32px; border-radius: 8px; display: flex;
-            align-items: center; justify-content: center; color: var(--text-muted);
-            transition: all var(--transition); flex-shrink: 0; }
-.mute-btn:hover { color: var(--text); background: var(--surface-3); }
-.mute-btn.muted { color: var(--danger); }
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: 2px solid rgba(255,255,255,.3);
+  cursor: pointer;
+}
+.slider-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; font-weight: 700;
+  color: var(--text); width: 36px; text-align: right;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.mute-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); background: var(--surface);
+  border: 1px solid var(--border);
+  transition: all var(--transition); flex-shrink: 0;
+}
+.mute-btn:hover { color: var(--text); background: var(--surface-2); }
+.mute-btn.muted {
+  color: var(--danger);
+  background: rgba(248,113,113,.12);
+  border-color: rgba(248,113,113,.3);
+}
 
 /* ── Sources ─────────────────────────────────────────────────────────── */
-.sources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 8px; }
-.source-btn { padding: 10px 8px; border-radius: var(--radius-sm);
-              border: 1px solid var(--border); background: var(--surface-2);
-              color: var(--text-muted); font-size: 12px; font-weight: 500;
-              display: flex; flex-direction: column; align-items: center; gap: 6px;
-              transition: all var(--transition); }
-.source-btn:hover { border-color: var(--border-strong); color: var(--text); background: var(--surface-3); }
-.source-btn:active { transform: scale(.96); }
-.source-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-.source-btn svg { opacity: .7; }
-.source-btn.active svg { opacity: 1; }
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+.source-btn {
+  padding: 14px 8px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 12px; font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  transition: all var(--transition);
+  backdrop-filter: blur(8px);
+  letter-spacing: .01em;
+}
+.source-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+  background: var(--surface-2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+.source-btn:active { transform: scale(.95) translateY(0); }
+.source-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+.source-icon-wrap {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-3);
+  transition: all var(--transition);
+}
+.source-btn.active .source-icon-wrap {
+  background: var(--accent-dim);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
 
 /* ── Presets ─────────────────────────────────────────────────────────── */
-.section-head { display: flex; align-items: center; justify-content: space-between;
-                margin-bottom: 14px; }
-.section-head h3 { font-size: 11px; font-weight: 600; color: var(--text-faint);
-                   letter-spacing: .08em; text-transform: uppercase; }
-.text-btn { font-size: 12px; color: var(--accent); padding: 4px 10px;
-            border-radius: 6px; transition: all var(--transition); }
-.text-btn:hover { background: var(--accent-dim); }
-
+.section-head {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 14px;
+}
+.section-head h3 {
+  font-size: 10px; font-weight: 700;
+  color: var(--accent); letter-spacing: .12em;
+  text-transform: uppercase; opacity: .9;
+}
+.text-btn {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  padding: 5px 12px; border-radius: 6px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(124,110,245,.25);
+  transition: all var(--transition);
+  letter-spacing: .02em;
+}
+.text-btn:hover {
+  background: rgba(124,110,245,.25);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
 .presets-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; }
-.preset-btn { border-radius: var(--radius-sm); border: 1px solid var(--border);
-              background: var(--surface-2); padding: 10px 4px; display: flex;
-              flex-direction: column; align-items: center; gap: 4px;
-              transition: all var(--transition); }
-.preset-btn:hover { border-color: var(--border-strong); background: var(--surface-3); }
-.preset-btn:active { transform: scale(.94); }
-.preset-btn.active { border-color: var(--accent); background: var(--accent-dim); }
-.preset-num { font-size: 15px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
-              color: var(--text-muted); line-height: 1; }
-.preset-btn.active .preset-num { color: var(--accent); }
-.preset-name { font-size: 9px; color: var(--text-faint); text-align: center;
-               white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-               width: 100%; padding: 0 2px; line-height: 1.2; }
+.preset-btn {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 12px 4px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  transition: all var(--transition);
+  backdrop-filter: blur(8px);
+  position: relative; overflow: hidden;
+}
+.preset-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+.preset-btn:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+.preset-btn:active { transform: scale(.93); }
+.preset-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+.preset-num {
+  font-size: 16px; font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted); line-height: 1;
+}
+.preset-btn.active .preset-num {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.preset-name {
+  font-size: 9px; color: var(--text-faint); text-align: center;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  width: 100%; padding: 0 3px; line-height: 1.3;
+  font-weight: 500;
+}
 .preset-btn.active .preset-name { color: var(--text-muted); }
 
-/* ── Custom Radio Editor ─────────────────────────────────────────────── */
+/* ── Radio Editor ────────────────────────────────────────────────────── */
 .radio-editor { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
-.radio-row { display: grid; grid-template-columns: 28px 1fr 1fr auto; gap: 6px; align-items: center; }
-.radio-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
-             color: var(--text-faint); text-align: center; }
-.radio-input { background: var(--surface-3); border: 1px solid var(--border);
-               border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text);
-               outline: none; transition: border-color var(--transition); width: 100%; }
-.radio-input:focus { border-color: var(--accent); }
+.radio-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 1fr auto;
+  gap: 6px; align-items: center;
+}
+.radio-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 700;
+  color: var(--accent); text-align: center; opacity: .7;
+}
+.radio-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px;
+  font-size: 12px; color: var(--text);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+  backdrop-filter: blur(8px);
+}
+.radio-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
 .radio-input::placeholder { color: var(--text-faint); }
-.play-radio-btn { width: 28px; height: 28px; border-radius: 6px; display: flex;
-                  align-items: center; justify-content: center; background: var(--accent-dim);
-                  color: var(--accent); flex-shrink: 0; transition: all var(--transition); }
-.play-radio-btn:hover { background: var(--accent); color: #000; }
+.play-radio-btn {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-dim);
+  border: 1px solid rgba(124,110,245,.3);
+  color: var(--accent); flex-shrink: 0;
+  transition: all var(--transition);
+}
+.play-radio-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
 
 /* ── Setup Overlay ───────────────────────────────────────────────────── */
-.overlay { position: fixed; inset: 0; background: var(--bg);
-           display: flex; align-items: center; justify-content: center;
-           z-index: 100; padding: 24px; }
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(8,8,16,.96);
+  backdrop-filter: blur(20px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; padding: 24px;
+}
 .overlay.hidden { display: none; }
-.setup-card { background: var(--surface); border: 1px solid var(--border);
-              border-radius: 20px; padding: 36px 32px; width: 100%; max-width: 420px;
-              text-align: center; box-shadow: var(--shadow); }
-.setup-logo { margin: 0 auto 20px; color: var(--accent); }
-.setup-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-.setup-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
-.setup-input { width: 100%; padding: 12px 16px; border-radius: 10px;
-               border: 1px solid var(--border); background: var(--surface-2);
-               color: var(--text); font-size: 16px; outline: none; text-align: center;
-               letter-spacing: .02em; transition: border-color var(--transition); margin-bottom: 12px; }
-.setup-input:focus { border-color: var(--accent); }
-.setup-btn { width: 100%; padding: 13px; border-radius: 10px;
-             background: var(--accent); color: #000; font-size: 15px; font-weight: 600;
-             transition: all var(--transition); }
-.setup-btn:hover { background: var(--accent-hover); }
-.setup-error { color: var(--danger); font-size: 12px; margin-top: 8px; min-height: 18px; }
+.setup-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-radius: 24px; padding: 40px 32px;
+  width: 100%; max-width: 420px;
+  text-align: center;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  animation: slideUp .5s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideUp {
+  from { opacity:0; transform: translateY(24px); }
+}
+.setup-logo {
+  margin: 0 auto 24px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 16px var(--accent-glow));
+  animation: logoPulse 3s ease-in-out infinite;
+}
+.setup-card h1 {
+  font-size: 24px; font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -.03em;
+}
+.setup-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 28px; line-height: 1.6; }
+.setup-input {
+  width: 100%; padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text); font-size: 16px;
+  outline: none; text-align: center;
+  letter-spacing: .05em;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  margin-bottom: 14px;
+  backdrop-filter: blur(8px);
+}
+.setup-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-dim);
+}
+.setup-btn {
+  width: 100%; padding: 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff; font-size: 15px; font-weight: 700;
+  letter-spacing: .02em;
+  transition: all var(--transition);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+.setup-btn:hover {
+  box-shadow: 0 6px 30px var(--accent-glow);
+  transform: translateY(-1px) scale(1.01);
+  filter: brightness(1.1);
+}
+.setup-error { color: var(--danger); font-size: 12px; margin-top: 10px; min-height: 18px; }
 
 /* ── Settings Modal ──────────────────────────────────────────────────── */
-.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6);
-            display: flex; align-items: flex-end; justify-content: center;
-            z-index: 50; padding: 16px; backdrop-filter: blur(4px); }
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 50; padding: 16px;
+  backdrop-filter: blur(8px);
+}
 .modal-bg.hidden { display: none; }
-.modal { background: var(--surface); border: 1px solid var(--border);
-         border-radius: 20px 20px 16px 16px; padding: 28px 24px;
-         width: 100%; max-width: 480px; box-shadow: var(--shadow); }
-.modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
-.modal label { display: block; font-size: 12px; color: var(--text-muted);
-               margin-bottom: 6px; font-weight: 500; }
+.modal {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-radius: 20px 20px 16px 16px;
+  padding: 28px 24px;
+  width: 100%; max-width: 480px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp .35s cubic-bezier(.16,1,.3,1);
+}
+.modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 20px; letter-spacing: -.02em; }
+.modal label {
+  display: block; font-size: 12px;
+  color: var(--text-muted); margin-bottom: 6px;
+  font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+}
 .modal-actions { display: flex; gap: 8px; margin-top: 20px; }
-.btn { padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600;
-       transition: all var(--transition); }
-.btn-primary { background: var(--accent); color: #000; }
-.btn-primary:hover { background: var(--accent-hover); }
-.btn-ghost { border: 1px solid var(--border); color: var(--text-muted); }
-.btn-ghost:hover { background: var(--surface-3); color: var(--text); }
+.btn {
+  padding: 11px 22px; border-radius: 10px;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: .02em;
+  transition: all var(--transition);
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
+  box-shadow: 0 3px 14px var(--accent-glow);
+}
+.btn-primary:hover {
+  box-shadow: 0 4px 20px var(--accent-glow);
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+}
+.btn-ghost:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
 
 /* ── Toast ───────────────────────────────────────────────────────────── */
-.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 200;
-                   display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-.toast { padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 500;
-         box-shadow: var(--shadow); animation: slideIn .25s ease;
-         background: var(--surface-3); border: 1px solid var(--border); }
-.toast.error   { background: rgba(248,113,113,.15); border-color: var(--danger); color: var(--danger); }
-.toast.success { background: rgba(74,222,128,.12);  border-color: var(--success); color: var(--success); }
-@keyframes slideIn { from { opacity:0; transform: translateX(12px); } }
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  padding: 11px 18px; border-radius: 12px;
+  font-size: 13px; font-weight: 600;
+  backdrop-filter: blur(20px);
+  animation: toastIn .3s cubic-bezier(.16,1,.3,1);
+  background: var(--glass-bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  letter-spacing: .01em;
+}
+.toast.error   { background: rgba(248,113,113,.15); border-color: rgba(248,113,113,.3); color: var(--danger); }
+.toast.success { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.25); color: var(--success); }
+@keyframes toastIn {
+  from { opacity:0; transform: translateX(16px) scale(.95); }
+}
 
-/* ── Misc ────────────────────────────────────────────────────────────── */
+/* ── Divider & Misc ──────────────────────────────────────────────────── */
 .hidden { display: none !important; }
-.divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+  margin: 4px 0 16px;
+}
+.footer-text {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-top: 8px;
+  letter-spacing: .04em;
+  opacity: .6;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────── */
 @media (max-width: 400px) {
   .presets-grid { grid-template-columns: repeat(3,1fr); }
   .sources-grid { grid-template-columns: repeat(2,1fr); }
+  .t-btn { width: 44px; height: 44px; }
+  .t-btn.primary { width: 56px; height: 56px; }
 }
 </style>
 </head>
 <body>
+<div class="bg-canvas" aria-hidden="true"></div>
 
 <!-- ── Setup Overlay ─────────────────────────────────────────────────── -->
 <div class="overlay" id="setup-overlay">
   <div class="setup-card">
-    <svg class="setup-logo" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-label="SoundTouch Logo">
-      <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="2"/>
-      <circle cx="24" cy="24" r="10" stroke="currentColor" stroke-width="2"/>
-      <circle cx="24" cy="24" r="3" fill="currentColor"/>
-      <line x1="24" y1="2" x2="24" y2="14" stroke="currentColor" stroke-width="2"/>
-      <line x1="24" y1="34" x2="24" y2="46" stroke="currentColor" stroke-width="2"/>
+    <svg class="setup-logo" width="52" height="52" viewBox="0 0 48 48" fill="none" aria-label="SoundTouch Logo">
+      <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="24" cy="24" r="13" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2" opacity=".5"/>
+      <circle cx="24" cy="24" r="6" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+      <line x1="24" y1="2" x2="24" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="24" y1="37" x2="24" y2="46" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="2" y1="24" x2="11" y2="24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="37" y1="24" x2="46" y2="24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <h1>SoundTouch Controller</h1>
     <p>Entrez l'adresse IP de votre SoundTouch 30 sur le réseau local</p>
@@ -306,13 +780,15 @@ input[type="range"]::-moz-range-thumb {
 <div class="app hidden" id="app">
   <!-- Header -->
   <header>
-    <svg class="logo-svg" width="32" height="32" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-      <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="2"/>
-      <circle cx="24" cy="24" r="10" stroke="currentColor" stroke-width="2"/>
-      <circle cx="24" cy="24" r="3" fill="currentColor"/>
-      <line x1="24" y1="2" x2="24" y2="14" stroke="currentColor" stroke-width="2"/>
-      <line x1="24" y1="34" x2="24" y2="46" stroke="currentColor" stroke-width="2"/>
-    </svg>
+    <div class="logo-wrap">
+      <div class="logo-glow" aria-hidden="true"></div>
+      <svg class="logo-svg" width="32" height="32" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="24" cy="24" r="13" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2" opacity=".5"/>
+        <circle cx="24" cy="24" r="6" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+      </svg>
+    </div>
     <div class="device-info">
       <div class="device-name" id="device-name">SoundTouch 30</div>
       <div class="device-sub">
@@ -324,27 +800,33 @@ input[type="range"]::-moz-range-thumb {
     </div>
     <div class="header-actions">
       <button class="icon-btn" id="settings-btn" aria-label="Paramètres">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       </button>
       <button class="icon-btn" id="theme-toggle-btn" aria-label="Thème">
-        <svg id="theme-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg id="theme-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       </button>
     </div>
   </header>
 
   <!-- Now Playing -->
-  <div class="card">
+  <div class="now-playing-card">
     <div class="card-title">En lecture</div>
     <div class="now-playing">
       <div class="art-wrap" id="art-wrap">
-        <img id="album-art" src="" alt="Pochette" style="display:none;">
+        <img id="album-art" src="" alt="Pochette" style="display:none;" width="88" height="88" loading="lazy">
         <span class="art-placeholder" id="art-placeholder">♫</span>
       </div>
       <div class="track-info">
         <div class="track-station" id="np-station">—</div>
         <div class="track-title"  id="np-track"></div>
         <div class="track-artist" id="np-artist"></div>
-        <div class="play-badge stopped" id="play-badge">
+        <div class="waveform" id="waveform" aria-hidden="true">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+        <div class="play-badge stopped" id="play-badge" style="display:none;">
           <span class="dot"></span><span id="play-status-text">Arrêté</span>
         </div>
       </div>
@@ -359,7 +841,7 @@ input[type="range"]::-moz-range-thumb {
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
       </button>
       <button class="t-btn" data-key="STOP" aria-label="Stop">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+        <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
       </button>
       <button class="t-btn primary" id="play-pause-btn" aria-label="Lecture/Pause">
         <svg id="pp-icon-play" width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -376,7 +858,7 @@ input[type="range"]::-moz-range-thumb {
     <div class="card-title">Volume</div>
     <div class="slider-row">
       <button class="mute-btn" id="mute-btn" aria-label="Mute">
-        <svg id="vol-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+        <svg id="vol-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
       </button>
       <div class="slider-wrap">
         <input type="range" id="volume-slider" min="0" max="100" value="30">
@@ -404,15 +886,21 @@ input[type="range"]::-moz-range-thumb {
     </div>
     <div class="sources-grid" id="sources-grid">
       <button class="source-btn" data-src="BLUETOOTH" data-acct="" aria-label="Bluetooth">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>
+        <div class="source-icon-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>
+        </div>
         Bluetooth
       </button>
       <button class="source-btn" data-src="PRODUCT" data-acct="TV" aria-label="TV / HDMI">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3l-4 4-4-4"/></svg>
+        <div class="source-icon-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3l-4 4-4-4"/></svg>
+        </div>
         TV / HDMI
       </button>
       <button class="source-btn" data-src="AUX" data-acct="AUX" aria-label="AUX">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <div class="source-icon-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
         AUX
       </button>
     </div>
@@ -437,7 +925,7 @@ input[type="range"]::-moz-range-thumb {
     <div class="hidden" id="radio-editor">
       <div class="divider" style="margin-top:16px;"></div>
       <p style="font-size:11px;color:var(--text-faint);margin-bottom:10px;">
-        Radios personnalisées — remplacent les présets de l'appareil lors du clic
+        Radios personnalisées — remplacent les présets lors du clic
       </p>
       <div class="radio-editor" id="radio-rows"></div>
       <div style="margin-top:12px;display:flex;gap:8px;">
@@ -447,10 +935,7 @@ input[type="range"]::-moz-range-thumb {
     </div>
   </div>
 
-  <!-- Info bas de page -->
-  <div style="text-align:center;font-size:11px;color:var(--text-faint);margin-top:8px;">
-    Bose SoundTouch Controller · Port 8090 (HTTP) · 8080 (WS)
-  </div>
+  <div class="footer-text">Bose SoundTouch Controller · Port 8090 (HTTP) · 8080 (WS)</div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════════ -->
@@ -465,7 +950,7 @@ const S = {
   nowPlaying: {},
   currentSource: '', currentSourceAcct: '',
   activePreset: 0,
-  devicePresets: Array(6).fill(null),  // from /presets
+  devicePresets: Array(6).fill(null),
   customRadio: JSON.parse(localStorage.getItem('st_custom_radio') ||
     JSON.stringify(Array(6).fill({ name: '', url: '' }))),
 };
@@ -518,7 +1003,6 @@ async function refreshNowPlaying() {
     np.artStatus = doc.querySelector('art')?.getAttribute('artImageStatus') || '';
     S.playStatus = txt(doc, 'playStatus') || 'STOP_STATE';
     S.playing    = S.playStatus === 'PLAY_STATE';
-    // detect current source
     const ci = doc.querySelector('ContentItem');
     if (ci) {
       S.currentSource    = ci.getAttribute('source') || '';
@@ -528,7 +1012,6 @@ async function refreshNowPlaying() {
     renderSources();
   } catch {}
 }
-
 async function refreshVolume() {
   try {
     const doc = await apiGet('/volume');
@@ -537,7 +1020,6 @@ async function refreshVolume() {
     renderVolume();
   } catch {}
 }
-
 async function refreshBass() {
   if (!S.bassAvailable) return;
   try {
@@ -546,7 +1028,6 @@ async function refreshBass() {
     renderBass();
   } catch {}
 }
-
 async function refreshBassCapabilities() {
   try {
     const doc = await apiGet('/bassCapabilities');
@@ -561,7 +1042,6 @@ async function refreshBassCapabilities() {
     }
   } catch {}
 }
-
 async function refreshPresets() {
   try {
     const doc = await apiGet('/presets');
@@ -581,7 +1061,6 @@ async function refreshPresets() {
     renderPresets();
   } catch {}
 }
-
 async function refreshDeviceInfo() {
   try {
     const doc = await apiGet('/info');
@@ -589,7 +1068,6 @@ async function refreshDeviceInfo() {
     if (name) document.getElementById('device-name').textContent = name;
   } catch {}
 }
-
 async function refreshAll() {
   setStatus('connecting');
   try {
@@ -610,31 +1088,36 @@ function renderNowPlaying() {
   document.getElementById('np-track').textContent   = np.track  || '';
   document.getElementById('np-artist').textContent  = np.artist || '';
 
-  // Album art
-  const img  = document.getElementById('album-art');
-  const ph   = document.getElementById('art-placeholder');
+  const img = document.getElementById('album-art');
+  const ph  = document.getElementById('art-placeholder');
   if (np.artUrl && np.artStatus === 'IMAGE_PRESENT') {
     img.src = np.artUrl; img.style.display = ''; ph.style.display = 'none';
     img.onerror = () => { img.style.display='none'; ph.style.display=''; };
   } else { img.style.display = 'none'; ph.style.display = ''; }
 
-  // Play badge
-  const badge  = document.getElementById('play-badge');
-  const btext  = document.getElementById('play-status-text');
-  const ppPlay = document.getElementById('pp-icon-play');
-  const ppPause= document.getElementById('pp-icon-pause');
-  badge.className = 'play-badge';
+  // Waveform state
+  const waveform = document.getElementById('waveform');
+  const badge    = document.getElementById('play-badge');
+  const btext    = document.getElementById('play-status-text');
+  const ppPlay   = document.getElementById('pp-icon-play');
+  const ppPause  = document.getElementById('pp-icon-pause');
+
+  waveform.className = 'waveform';
   if (S.playStatus === 'PLAY_STATE') {
-    badge.classList.add(''); btext.textContent = 'Lecture';
-    badge.querySelector('.dot').classList.add('pulse');
+    waveform.style.display = 'flex';
+    badge.style.display = 'none';
     ppPlay.style.display = 'none'; ppPause.style.display = '';
   } else if (S.playStatus === 'PAUSE_STATE') {
-    badge.classList.add('paused'); btext.textContent = 'Pause';
-    badge.querySelector('.dot').classList.remove('pulse');
+    waveform.className = 'waveform paused';
+    waveform.style.display = 'flex';
+    badge.style.display = 'none';
     ppPlay.style.display = ''; ppPause.style.display = 'none';
   } else {
-    badge.classList.add('stopped'); btext.textContent = 'Arrêté';
-    badge.querySelector('.dot').classList.remove('pulse');
+    waveform.className = 'waveform stopped';
+    waveform.style.display = 'none';
+    badge.style.display = 'inline-flex';
+    badge.className = 'play-badge stopped';
+    btext.textContent = 'Arrêté';
     ppPlay.style.display = ''; ppPause.style.display = 'none';
   }
 }
@@ -644,12 +1127,9 @@ function renderVolume() {
   const val = document.getElementById('volume-val');
   sl.value  = S.volume;
   val.textContent = S.volume;
-  // Slider fill (visual trick)
   const pct = S.volume;
   sl.style.background = `linear-gradient(to right, var(--accent) ${pct}%, var(--surface-3) ${pct}%)`;
-  // Mute
-  const btn = document.getElementById('mute-btn');
-  btn.classList.toggle('muted', S.muted);
+  document.getElementById('mute-btn').classList.toggle('muted', S.muted);
 }
 
 function renderBass() {
@@ -702,18 +1182,14 @@ function connectWS() {
   clearTimeout(wsTimer);
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
   ws = new WebSocket(`${proto}://${location.host}/ws`);
-
   ws.onopen = () => { S.wsConnected = true; };
-
   ws.onmessage = e => {
-    // App-internal JSON messages
     try {
       const j = JSON.parse(e.data);
       if (j._app === 'ws_connected')    { setStatus('connected'); return; }
       if (j._app === 'ws_disconnected') { setStatus('disconnected'); return; }
       if (j._app === 'ws_error')        { return; }
     } catch {}
-    // Bose XML
     try {
       const doc = parse(e.data);
       if (doc.querySelector('volumeUpdated'))    refreshVolume();
@@ -725,7 +1201,6 @@ function connectWS() {
         refreshNowPlaying();
     } catch {}
   };
-
   ws.onclose = () => {
     S.wsConnected = false;
     setStatus('disconnected');
@@ -739,26 +1214,20 @@ function connectWS() {
 
 // ── User actions ───────────────────────────────────────────────────────
 async function setVolume(v) {
-  S.volume = v;
-  renderVolume();
+  S.volume = v; renderVolume();
   try { await apiPost('/volume', `<volume>${v}</volume>`); }
   catch(e) { toast('Erreur volume : ' + e.message, 'error'); }
 }
-
 async function toggleMute() {
-  S.muted = !S.muted;
-  renderVolume();
+  S.muted = !S.muted; renderVolume();
   try { await apiPost('/volume', `<volume>${S.volume}<muteenabled>${S.muted}</muteenabled></volume>`); }
   catch(e) { toast('Erreur mute : ' + e.message, 'error'); }
 }
-
 async function setBass(v) {
-  S.bass = v;
-  renderBass();
+  S.bass = v; renderBass();
   try { await apiPost('/bass', `<bass>${v}</bass>`); }
   catch(e) { toast('Erreur basses : ' + e.message, 'error'); }
 }
-
 async function selectSource(src, acct) {
   const xml = acct
     ? `<ContentItem source="${src}" sourceAccount="${acct}"></ContentItem>`
@@ -769,11 +1238,9 @@ async function selectSource(src, acct) {
     setTimeout(refreshNowPlaying, 1000);
   } catch(e) { toast('Erreur source : ' + e.message, 'error'); }
 }
-
 async function activatePreset(n) {
   const cr = S.customRadio[n - 1];
   if (cr && cr.url) {
-    // Custom radio
     const name = cr.name || `Radio ${n}`;
     const url  = cr.url;
     try {
@@ -781,21 +1248,15 @@ async function activatePreset(n) {
         `<ContentItem source="INTERNET_RADIO" location="${url}" sourceAccount="" isPresetable="false"><itemName>${name}</itemName></ContentItem>`);
       toast(`Lecture : ${name}`);
       setTimeout(refreshNowPlaying, 1500);
-    } catch(e) {
-      // Fallback to device preset
-      await sendKey(`PRESET_${n}`);
-    }
+    } catch(e) { await sendKey(`PRESET_${n}`); }
   } else {
-    // Device preset
     await sendKey(`PRESET_${n}`);
     setTimeout(refreshNowPlaying, 1500);
   }
 }
-
 function togglePlayPause() {
   if (S.playStatus === 'PLAY_STATE') sendKey('PAUSE');
   else sendKey('PLAY');
-  // Optimistic UI
   S.playStatus = S.playStatus === 'PLAY_STATE' ? 'PAUSE_STATE' : 'PLAY_STATE';
   S.playing    = S.playStatus === 'PLAY_STATE';
   renderNowPlaying();
@@ -803,28 +1264,21 @@ function togglePlayPause() {
 
 // ── Init ───────────────────────────────────────────────────────────────
 async function init() {
-  // Load server config
   try {
     const r = await fetch('/config');
     const c = await r.json();
     S.ip = c.ip;
   } catch {}
-
-  if (S.ip) {
-    showApp();
-  } else {
-    document.getElementById('setup-overlay').classList.remove('hidden');
-  }
+  if (S.ip) showApp();
+  else document.getElementById('setup-overlay').classList.remove('hidden');
 }
-
 function showApp() {
   document.getElementById('setup-overlay').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
-  renderPresets(); // show custom radio names immediately
+  renderPresets();
   refreshAll();
   connectWS();
 }
-
 async function saveIp(ip) {
   S.ip = ip;
   await fetch('/config', {
@@ -836,7 +1290,6 @@ async function saveIp(ip) {
 
 // ── Custom radio editor ────────────────────────────────────────────────
 let editRadioData = [];
-
 function openRadioEditor() {
   editRadioData = S.customRadio.map(r => ({ ...r }));
   const container = document.getElementById('radio-rows');
@@ -847,17 +1300,16 @@ function openRadioEditor() {
     const cr = editRadioData[i] || { name: '', url: '' };
     row.innerHTML = `
       <span class="radio-num">${i + 1}</span>
-      <input class="radio-input" data-field="name" data-idx="${i}" placeholder="Nom (ex: CJPX Jazz)" value="${cr.name || ''}">
+      <input class="radio-input" data-field="name" data-idx="${i}" placeholder="Nom" value="${cr.name || ''}">
       <input class="radio-input" data-field="url"  data-idx="${i}" placeholder="URL stream" value="${cr.url || ''}">
       <button class="play-radio-btn" data-idx="${i}" title="Tester">
-        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </button>`;
     container.appendChild(row);
   }
   document.getElementById('radio-editor').classList.remove('hidden');
   document.getElementById('edit-radio-btn').classList.add('hidden');
 }
-
 function saveRadioEditor() {
   document.querySelectorAll('#radio-rows .radio-input').forEach(inp => {
     const i = parseInt(inp.dataset.idx);
@@ -870,7 +1322,6 @@ function saveRadioEditor() {
   closeRadioEditor();
   toast('Radios enregistrées', 'success');
 }
-
 function closeRadioEditor() {
   document.getElementById('radio-editor').classList.add('hidden');
   document.getElementById('edit-radio-btn').classList.remove('hidden');
@@ -878,7 +1329,6 @@ function closeRadioEditor() {
 
 // ── Theme ──────────────────────────────────────────────────────────────
 let darkMode = localStorage.getItem('st_theme') !== 'light';
-
 function applyTheme() {
   document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
   const icon = document.getElementById('theme-icon');
@@ -890,29 +1340,24 @@ function applyTheme() {
 }
 applyTheme();
 
-// ── Event listeners ────────────────────────────────────────────────────
-// Setup
+// ── Event Listeners ────────────────────────────────────────────────────
 document.getElementById('setup-connect-btn').addEventListener('click', async () => {
   const ip = document.getElementById('setup-ip').value.trim();
   if (!ip) return;
   document.getElementById('setup-error').textContent = '';
   const btn = document.getElementById('setup-connect-btn');
   btn.textContent = 'Connexion…'; btn.disabled = true;
-  await saveIp(ip);
-  showApp();
+  await saveIp(ip); showApp();
   btn.textContent = 'Connecter'; btn.disabled = false;
 });
 document.getElementById('setup-ip').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('setup-connect-btn').click();
 });
-
-// Transport
 document.querySelectorAll('[data-key]').forEach(btn => {
   btn.addEventListener('click', () => sendKey(btn.dataset.key));
 });
 document.getElementById('play-pause-btn').addEventListener('click', togglePlayPause);
 
-// Volume
 const volSlider = document.getElementById('volume-slider');
 let volTimer;
 volSlider.addEventListener('input', () => {
@@ -925,7 +1370,6 @@ volSlider.addEventListener('input', () => {
 });
 document.getElementById('mute-btn').addEventListener('click', toggleMute);
 
-// Bass
 const bassSlider = document.getElementById('bass-slider');
 let bassTimer;
 bassSlider.addEventListener('input', () => {
@@ -939,17 +1383,12 @@ bassSlider.addEventListener('input', () => {
   bassTimer = setTimeout(() => setBass(v), 250);
 });
 
-// Sources
 document.querySelectorAll('.source-btn').forEach(btn => {
   btn.addEventListener('click', () => selectSource(btn.dataset.src, btn.dataset.acct));
 });
-
-// Presets
 document.querySelectorAll('.preset-btn').forEach(btn => {
   btn.addEventListener('click', () => activatePreset(parseInt(btn.dataset.preset)));
 });
-
-// Radio editor
 document.getElementById('edit-radio-btn').addEventListener('click', openRadioEditor);
 document.getElementById('save-radio-btn').addEventListener('click', saveRadioEditor);
 document.getElementById('cancel-radio-btn').addEventListener('click', closeRadioEditor);
@@ -962,10 +1401,8 @@ document.getElementById('radio-rows').addEventListener('click', e => {
   if (!url) { toast('Entrez une URL de flux', 'error'); return; }
   apiPost('/select', `<ContentItem source="INTERNET_RADIO" location="${url}" sourceAccount="" isPresetable="false"><itemName>${name}</itemName></ContentItem>`)
     .then(() => toast(`Test : ${name}`))
-    .catch(() => toast('Source non supportée sur cet appareil', 'error'));
+    .catch(() => toast('Source non supportée', 'error'));
 });
-
-// Settings modal
 document.getElementById('settings-btn').addEventListener('click', () => {
   document.getElementById('settings-ip').value = S.ip || '';
   document.getElementById('settings-modal').classList.remove('hidden');
@@ -985,8 +1422,6 @@ document.getElementById('settings-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('settings-modal'))
     document.getElementById('settings-modal').classList.add('hidden');
 });
-
-// Theme
 document.getElementById('theme-toggle-btn').addEventListener('click', () => {
   darkMode = !darkMode;
   localStorage.setItem('st_theme', darkMode ? 'dark' : 'light');
